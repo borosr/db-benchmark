@@ -6,22 +6,24 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/borosr/db-benchmark/drivers/mysql"
 )
 
 const (
-	mysql     cmd = "mysql"
-	couchbase cmd = "couchbase"
-	cockroach cmd = "cockroach"
+	mysqlCmd     cmd = "mysql"
+	couchbaseCmd cmd = "couchbase"
+	cockroachCmd cmd = "cockroach"
 )
 
 var (
-	all           = []string{string(mysql), string(couchbase), string(cockroach)}
+	all           = []string{string(mysqlCmd), string(couchbaseCmd), string(cockroachCmd)}
 	validCmdRegex = regexp.MustCompile("(" + strings.Join(all, "|") + ")")
 
 	commands = map[cmd]Benchmark{
-		mysql:     nil,
-		couchbase: nil,
-		cockroach: nil,
+		mysqlCmd:     mysql.New(),
+		couchbaseCmd: nil,
+		cockroachCmd: nil,
 	}
 )
 

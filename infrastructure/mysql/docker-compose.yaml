@@ -1,0 +1,12 @@
+version: '3.0'
+
+services:
+  percona:
+    image: percona:8.0-centos
+    environment:
+      MYSQL_ROOT_PASSWORD: dataset
+      MYSQL_DATABASE: dataset
+      MYSQL_USER: dataset
+      MYSQL_PASSWORD: dataset
+    ports:
+      - 3306:3306

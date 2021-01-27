@@ -18,7 +18,7 @@ var (
 
 func loadFlags() {
 	flag.IntVar(&workers, "workers", 10, "")
-	flag.IntVar(&cycles, "cycles", 10000, "")
+	flag.IntVar(&cycles, "cycles", 100, "")
 	flag.DurationVar(&waitAfter, "wait", time.Second, "")
 	flag.Parse()
 }
@@ -31,9 +31,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	Execute(benchmark, Config{
+	result := Execute(benchmark, Config{
 		WaitAfter: waitAfter,
 		Workers:   workers,
 		Cycles:    cycles,
 	})
+
+	log.Printf("Result is: %s", result.String())
 }

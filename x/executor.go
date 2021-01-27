@@ -2,6 +2,7 @@ package x
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -21,11 +22,23 @@ type Result struct {
 	AvgRead  time.Duration
 }
 
+func (r Result) String() string {
+	return fmt.Sprintf("All: %v | AVG Cycle: %v | AVG Write: %v | AVG Read: %v", r.All, r.AvgCycle, r.AvgWrite, r.AvgRead)
+}
+
 type subResult struct {
 	all   time.Duration
 	write time.Duration
 	read  time.Duration
 	err   error
+}
+
+func (r subResult) String() string {
+	var format = "Cycle: %v | Write: %v | Read: %v"
+	if r.err != nil {
+		return fmt.Sprintf(format + " | Error: %v", r.all, r.write, r.read, r.err)
+	}
+	return fmt.Sprintf(format, r.all, r.write, r.read)
 }
 
 func Execute(b cmd.Benchmark, c Config) Result {
@@ -50,7 +63,7 @@ func Execute(b cmd.Benchmark, c Config) Result {
 	var sumRead int64
 	var steps int
 	for i := 0; i < c.Cycles; i++ {
-		r := <- results
+		r := <-results
 		if r.err != nil {
 			log.Printf("Error in subresult: %v", r.err)
 
@@ -59,6 +72,8 @@ func Execute(b cmd.Benchmark, c Config) Result {
 		sumCycles += int64(r.all)
 		sumWrite += int64(r.write)
 		sumRead += int64(r.read)
+
+		log.Printf("Cycle success: %d : %s", steps, r)
 
 		steps++
 	}
@@ -80,6 +95,7 @@ func execute(ctx context.Context, b cmd.Benchmark, c Config, jobs chan struct{},
 			subRes.err = err
 			subRes.all = time.Since(start)
 			results <- subRes
+
 			continue
 		}
 		rStart := time.Now()
@@ -88,6 +104,7 @@ func execute(ctx context.Context, b cmd.Benchmark, c Config, jobs chan struct{},
 			subRes.all = time.Since(start)
 			subRes.read = time.Since(rStart)
 			results <- subRes
+
 			continue
 		}
 		subRes.all = time.Since(start)

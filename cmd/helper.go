@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/borosr/db-benchmark/drivers/cockroach"
 	"github.com/borosr/db-benchmark/drivers/mysql"
 )
 
@@ -20,11 +21,11 @@ var (
 	all           = []string{string(mysqlCmd), string(couchbaseCmd), string(cockroachCmd)}
 	validCmdRegex = regexp.MustCompile("(" + strings.Join(all, "|") + ")")
 
-	commands = map[cmd]Benchmark{
-		mysqlCmd:     mysql.New(),
-		couchbaseCmd: nil,
-		cockroachCmd: nil,
-	}
+	//commands = map[cmd]Benchmark{
+	//	mysqlCmd:     mysql.New(),
+	//	couchbaseCmd: nil,
+	//	cockroachCmd: cockroach.New(),
+	//}
 )
 
 type cmd string
@@ -45,5 +46,13 @@ func Parse(args []string) (Benchmark, error) {
 		return nil, fmt.Errorf("invalid cmd [%s], should be one of [%s]", args[1], strings.Join(all, ","))
 	}
 
-	return commands[cmd(args[1])], nil
+	//return commands[cmd(args[1])], nil
+	switch cmd(args[1]) {
+	case mysqlCmd:
+		return mysql.New(), nil
+	case cockroachCmd:
+		return cockroach.New(), nil
+	}
+
+	return nil, errors.New("invalid command type")
 }

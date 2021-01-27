@@ -1,0 +1,43 @@
+version: '3.0'
+
+services:
+## NOTE: FOR SINGLE NODE TEST
+#  roach1:
+#    hostname: roach1
+#    image: cockroachdb/cockroach:latest
+#    command: start-single-node --certs-dir=certs
+#    ports:
+#      - 26257:26257
+#      - 8080:8080
+#    volumes:
+#      - $PWD/certs:/cockroach/certs:ro
+#      - roach1:/cockroach/cockroach-data
+  roach1:
+    hostname: roach1
+    image: cockroachdb/cockroach:latest
+    command: start --certs-dir=certs --join=roach1,roach2,roach3
+    ports:
+      - 26257:26257
+      - 8080:8080
+    volumes:
+      - $PWD/certs:/cockroach/certs:ro
+      - roach1:/cockroach/cockroach-data
+  roach2:
+    hostname: roach2
+    image: cockroachdb/cockroach:latest
+    command: start --certs-dir=certs --join=roach1,roach2,roach3
+    volumes:
+      - $PWD/certs:/cockroach/certs:ro
+      - roach2:/cockroach/cockroach-data
+  roach3:
+    hostname: roach3
+    image: cockroachdb/cockroach:latest
+    command: start --certs-dir=certs --join=roach1,roach2,roach3
+    volumes:
+      - $PWD/certs:/cockroach/certs:ro
+      - roach3:/cockroach/cockroach-data
+
+volumes:
+  roach1:
+  roach2:
+  roach3:
